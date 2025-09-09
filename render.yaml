@@ -9,6 +9,8 @@ services:
     autoDeploy: true
   healthCheckPath: /api/health
   envVars:
+      - key: DB_DIALECT
+        value: postgres
       - key: NODE_ENV
         value: production
       - key: DB_USE_URL
