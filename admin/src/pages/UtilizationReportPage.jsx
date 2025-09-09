@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { adminService } from '../services/api';
-import { Chart, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend } from 'chart.js';
-Chart.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
+import Chart from 'chart.js/auto';
 
 export default function UtilizationReportPage(){
   const today = new Date();
