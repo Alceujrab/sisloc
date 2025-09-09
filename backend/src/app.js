@@ -62,7 +62,12 @@ app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'API da L
 // Errors
 app.use((err, req, res, next) => {
   console.error('Erro:', err.stack);
-  res.status(500).json({ success: false, message: 'Erro interno do servidor', ...(process.env.NODE_ENV === 'development' && { error: err.message }) });
+  const expose = process.env.EXPOSE_ERRORS === 'true' || process.env.NODE_ENV === 'development';
+  res.status(500).json({
+    success: false,
+    message: 'Erro interno do servidor',
+    ...(expose && { error: err.message, stack: err.stack })
+  });
 });
 app.use('*', (req, res) => res.status(404).json({ success: false, message: 'Rota não encontrada' }));
 

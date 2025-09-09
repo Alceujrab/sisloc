@@ -162,9 +162,11 @@ router.post('/login', loginValidation, async (req, res) => {
 
   } catch (error) {
     console.error('Erro no login:', error);
+    const expose = process.env.EXPOSE_ERRORS === 'true' || process.env.NODE_ENV === 'development';
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor'
+      message: 'Erro interno do servidor',
+      ...(expose && { error: String(error?.message || error) })
     });
   }
 });

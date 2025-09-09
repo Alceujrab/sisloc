@@ -31,6 +31,8 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: EXPOSE_ERRORS
+        value: "false"
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
