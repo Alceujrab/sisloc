@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>http://localhost:3003/</loc></url>
+  <url><loc>http://localhost:3003/vehicles</loc></url>
+  <url><loc>http://localhost:3003/groups</loc></url>
+  <url><loc>http://localhost:3003/locations</loc></url>
+  <url><loc>http://localhost:3003/offers</loc></url>
+  <url><loc>http://localhost:3003/faq</loc></url>
+  <url><loc>http://localhost:3003/about</loc></url>
+  <url><loc>http://localhost:3003/contact</loc></url>
+  <url><loc>http://localhost:3003/how-it-works</loc></url>
+  <url><loc>http://localhost:3003/loyalty</loc></url>
+  <url><loc>http://localhost:3003/business</loc></url>
+  <url><loc>http://localhost:3003/monthly</loc></url>
+</urlset>

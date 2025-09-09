@@ -1,0 +1,81 @@
+services:
+  - type: web
+    name: locadora-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      # Banco de Dados (use um provedor gratuito como PlanetScale/Railway/Neon)
+      - key: DB_USE_URL
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SSL_REJECT_UNAUTHORIZED
+        value: "false"
+      # CORS / URLs de frontend
+      - key: FRONTEND_URL
+        sync: false
+      - key: ADMIN_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      # JWT
+      - key: JWT_SECRET
+        generateValue: true
+      # Email (preencha conforme seu provedor)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_REQUIRE_TLS
+        value: "true"
+      - key: SMTP_IGNORE_TLS
+        value: "false"
+      - key: SMTP_TLS_REJECT_UNAUTHORIZED
+        value: "true"
+      - key: SMTP_FROM
+        sync: false
+      # WhatsApp (Meta Cloud API opcional)
+      - key: WHATSAPP_PROVIDER
+        value: meta
+      - key: META_WABA_ACCESS_TOKEN
+        sync: false
+      - key: META_WABA_PHONE_NUMBER_ID
+        sync: false
+
+  - type: web
+    name: locadora-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Ajuste para apontar para a URL pública do backend (preencher após criar o backend)
+      - key: VITE_API_URL
+        sync: false
+
+  - type: web
+    name: locadora-admin
+    runtime: static
+    rootDir: admin
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Ajuste para apontar para a URL pública do backend (preencher após criar o backend)
+      - key: VITE_API_URL
+        sync: false

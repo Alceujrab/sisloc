@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Locadora de Veículos - Alugue seu carro ideal</title>
+    <meta name="description" content="Locação de veículos com as melhores condições. Carros novos, seguros e preços competitivos." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Analytics (gtag.js) opcional -->
+    <script>
+      (function(){
+        const GA_ID = window?.ENV?.GA_ID || (typeof importMeta !== 'undefined' ? importMeta.env?.VITE_GA_ID : null);
+      })();
+    </script>
+    <script type="module">
+      const GA_ID = import.meta.env.VITE_GA_ID;
+      if (GA_ID) {
+        const gtagScript = document.createElement('script');
+        gtagScript.async = true;
+        gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+        document.head.appendChild(gtagScript);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', GA_ID);
+      }
+      const GTM_ID_HEAD = import.meta.env.VITE_GTM_ID;
+      if (GTM_ID_HEAD) {
+        const s = document.createElement('script');
+        s.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n })(window,document,'script','dataLayer','${GTM_ID_HEAD}');`;
+        document.head.appendChild(s);
+      }
+    </script>
+  </head>
+  <body>
+    <!-- GTM noscript -->
+    <script type="module">
+      const GTM_ID_BODY = import.meta.env.VITE_GTM_ID;
+      if (GTM_ID_BODY) {
+        const nos = document.createElement('noscript');
+        nos.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_ID_BODY}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
+        document.body.prepend(nos);
+      }
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

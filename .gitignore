@@ -1,0 +1,42 @@
+# Root ignores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.tmp
+*.swp
+*.zip
+Locadora.z0*
+
+# Node & build outputs
+**/node_modules/
+**/.cache/
+**/.parcel-cache/
+**/.vite/
+**/dist/
+**/build/
+
+# Env files
+.env
+.env.*
+**/.env.local
+
+# Test & coverage
+coverage/
+**/jest-cache/
+**/jest-tmp/
+
+# SQLite & uploads (keep prod storage elsewhere)
+**/*.sqlite
+uploads/
+**/uploads/
+
+# OS-specific
+Icon?
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
