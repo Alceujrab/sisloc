@@ -2,7 +2,8 @@ const { Sequelize } = require('sequelize');
 const path = require('path');
 
 // Configuração do banco de dados com suporte a SQLite (dev), MySQL e Postgres
-const defaultDialect = process.env.NODE_ENV === 'development' ? 'sqlite' : 'mysql';
+// Em produção, padronizamos Postgres (Neon) para evitar fallback acidental para MySQL
+const defaultDialect = process.env.NODE_ENV === 'development' ? 'sqlite' : 'postgres';
 
 // Detecta dialect com prioridade: schema da DATABASE_URL > DB_DIALECT > default
 function detectDialect() {
@@ -82,6 +83,10 @@ if (DIALECT === 'sqlite') {
     }
   });
 } else {
+  // Aviso útil em produção quando faltar DATABASE_URL
+  if (process.env.NODE_ENV !== 'development' && !process.env.DATABASE_URL) {
+    console.error('[DB] DATABASE_URL não definido. Defina a URL do Postgres (Neon) no Render com sslmode=require.');
+  }
   const useUrl = !!process.env.DATABASE_URL && (process.env.DB_USE_URL || 'true') !== 'false';
   const logging = process.env.NODE_ENV === 'development' ? console.log : false;
   const pool = { max: 5, min: 0, acquire: 30000, idle: 10000 };
