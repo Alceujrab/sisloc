@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 services:
   - type: web
     name: sisloc-backend
