@@ -8,7 +8,7 @@ services:
     startCommand: node server.js
     autoDeploy: true
   healthCheckPath: /api/health
-    envVars:
+  envVars:
       - key: NODE_ENV
         value: production
       - key: DB_USE_URL
