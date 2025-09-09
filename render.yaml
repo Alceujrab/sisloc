@@ -59,22 +59,24 @@ services:
         sync: false
 
   - type: web
-    name: sisloc-frontend
+  name: sisloc-frontend
     runtime: static
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
+  autoDeploy: true
     envVars:
       # Ajuste para apontar para a URL pública do backend (preencher após criar o backend)
       - key: VITE_API_URL
         sync: false
 
   - type: web
-    name: sisloc-admin
+  name: sisloc-admin
     runtime: static
     rootDir: admin
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
+  autoDeploy: true
     envVars:
       # Ajuste para apontar para a URL pública do backend (preencher após criar o backend)
       - key: VITE_API_URL
