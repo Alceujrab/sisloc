@@ -7,10 +7,10 @@ services:
     plan: free
   buildCommand: npm install
   preDeployCommand: npm run seed:admin
-    startCommand: node server.js
-    autoDeployTrigger: commit
-    healthCheckPath: /api/health
-    envVars:
+  startCommand: node server.js
+  autoDeployTrigger: commit
+  healthCheckPath: /api/health
+  envVars:
       - key: DB_DIALECT
         value: postgres
       - key: NODE_ENV
@@ -65,9 +65,9 @@ services:
     runtime: static
     rootDir: frontend
   buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    autoDeployTrigger: commit
-    envVars:
+  staticPublishPath: dist
+  autoDeployTrigger: commit
+  envVars:
       - key: VITE_API_URL
         sync: false
 
@@ -76,8 +76,9 @@ services:
     runtime: static
     rootDir: admin
   buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    autoDeployTrigger: commit
-    envVars:
+  staticPublishPath: dist
+  autoDeployTrigger: commit
+  envVars:
       - key: VITE_API_URL
         sync: false
+
