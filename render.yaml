@@ -7,11 +7,10 @@ services:
     buildCommand: npm ci
     startCommand: node server.js
     autoDeploy: true
+  healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 5000
       - key: DB_USE_URL
         value: "true"
       - key: DATABASE_URL
