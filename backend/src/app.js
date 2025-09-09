@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+const { sequelize } = require('./config/database');
 
 const app = express();
 
@@ -58,6 +59,34 @@ app.use('/api/public', require('./routes/public'));
 
 // Health
 app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'API da Locadora funcionando!', timestamp: new Date().toISOString() }));
+
+// Debug (apenas quando EXPOSE_ERRORS=true)
+if (process.env.EXPOSE_ERRORS === 'true') {
+  app.get('/api/debug/env-safe', (req, res) => {
+    const safe = {
+      nodeEnv: process.env.NODE_ENV,
+      adminUrl: process.env.ADMIN_URL,
+      frontendUrl: process.env.FRONTEND_URL,
+      corsOrigins: (process.env.CORS_ORIGINS || '').split(',').map(s=>s.trim()).filter(Boolean),
+      db: {
+        dialect: sequelize.getDialect && sequelize.getDialect(),
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        ssl: process.env.DB_SSL,
+        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED
+      }
+    };
+    res.json({ success: true, data: safe });
+  });
+
+  app.get('/api/debug/db-check', async (req, res) => {
+    try {
+      await sequelize.authenticate();
+      res.json({ success: true, message: 'DB OK' });
+    } catch (e) {
+      res.status(500).json({ success: false, message: 'DB FAIL', error: String(e?.message || e) });
+    }
+  });
+}
 
 // Errors
 app.use((err, req, res, next) => {
