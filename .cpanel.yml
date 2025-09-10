@@ -1,17 +1,26 @@
 ---
 deployment:
   tasks:
-    - export NODE_ENV=production
-    - echo "== Instala dependencias backend =="
-    - /opt/cpanel/ea-nodejs20/bin/npm --prefix backend install
-    - echo "== Build frontend =="
-    - /opt/cpanel/ea-nodejs20/bin/npm --prefix frontend install
-    - /opt/cpanel/ea-nodejs20/bin/npm --prefix frontend run build
-    - echo "== Build admin =="
-    - /opt/cpanel/ea-nodejs20/bin/npm --prefix admin install
-    - /opt/cpanel/ea-nodejs20/bin/npm --prefix admin run build
-    - echo "== Copiando bundles para backend/public =="
-    - rsync -a frontend/dist/ backend/public/frontend/
-    - rsync -a admin/dist/ backend/public/admin/
-    - echo "== Reiniciando Passenger =="
-    - mkdir -p backend/tmp && touch backend/tmp/restart.txt
+    # Ativa ambiente Node da aplicação (garante versão correta) e define produção
+    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && export NODE_ENV=production && echo "NODE $(node -v)" && which node
+
+    # Backend deps (usa ci para instalação limpa). O prefix evita precisar de cd
+    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && echo "== Instala dependencias backend ==" && npm --prefix backend ci --omit=dev
+
+    # Frontend build
+    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && echo "== Build frontend ==" && npm --prefix frontend ci && npm --prefix frontend run build
+
+    # Admin build
+    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && echo "== Build admin ==" && npm --prefix admin ci && npm --prefix admin run build
+
+    # Limpa bundles antigos para evitar lixo
+    - rm -rf backend/public/frontend/* backend/public/admin/* || true
+
+    # Copia novos bundles
+    - echo "== Copiando bundles para backend/public ==" && rsync -a frontend/dist/ backend/public/frontend/ && rsync -a admin/dist/ backend/public/admin/
+
+    # Lista conteúdo para debug rápido
+    - echo "== Conteúdo copiado (tree nivel 2) ==" && find backend/public -maxdepth 2 -type f -name 'index.html'
+
+    # Reinicia Passenger para carregar novo código
+    - echo "== Reiniciando Passenger ==" && mkdir -p backend/tmp && touch backend/tmp/restart.txt
