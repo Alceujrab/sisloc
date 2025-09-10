@@ -32,6 +32,9 @@ coverage/
 uploads/
 **/uploads/
 
+# Passenger / runtime tmp (não versionar)
+backend/tmp/
+
 # OS-specific
 Icon?
 
