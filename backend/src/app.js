@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 const { sequelize } = require('./config/database');
 
@@ -89,6 +90,30 @@ if (process.env.EXPOSE_ERRORS === 'true') {
 }
 
 // Errors
+// Servir SPAs (builds copiados para backend/public/* pelo deploy)
+const publicRoot = path.join(__dirname, '..', 'public');
+const frontendDir = path.join(publicRoot, 'frontend');
+const adminDir = path.join(publicRoot, 'admin');
+
+// Estáticos diretos das pastas
+if (process.env.SERVE_SPA !== 'false') { // flag opcional para desativar
+  app.use(express.static(frontendDir));
+  app.use('/admin', express.static(adminDir));
+
+  // Fallback admin SPA
+  app.get('/admin/*', (req, res, next) => {
+    if (req.path.startsWith('/admin/api')) return next();
+    return res.sendFile(path.join(adminDir, 'index.html'), (err) => { if (err) next(); });
+  });
+
+  // Fallback frontend SPA (rota não-API e não /admin)
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/admin')) return next();
+    return res.sendFile(path.join(frontendDir, 'index.html'), (err) => { if (err) next(); });
+  });
+}
+
+// Error handler
 app.use((err, req, res, next) => {
   console.error('Erro:', err.stack);
   const expose = process.env.EXPOSE_ERRORS === 'true' || process.env.NODE_ENV === 'development';
@@ -98,6 +123,8 @@ app.use((err, req, res, next) => {
     ...(expose && { error: err.message, stack: err.stack })
   });
 });
+
+// 404 JSON (se nada atendeu e não caiu em fallback)
 app.use('*', (req, res) => res.status(404).json({ success: false, message: 'Rota não encontrada' }));
 
 module.exports = app;

@@ -1,0 +1,17 @@
+---
+deployment:
+  tasks:
+    - export NODE_ENV=production
+    - echo "== Instala dependencias backend =="
+    - /opt/cpanel/ea-nodejs20/bin/npm --prefix backend install
+    - echo "== Build frontend =="
+    - /opt/cpanel/ea-nodejs20/bin/npm --prefix frontend install
+    - /opt/cpanel/ea-nodejs20/bin/npm --prefix frontend run build
+    - echo "== Build admin =="
+    - /opt/cpanel/ea-nodejs20/bin/npm --prefix admin install
+    - /opt/cpanel/ea-nodejs20/bin/npm --prefix admin run build
+    - echo "== Copiando bundles para backend/public =="
+    - rsync -a frontend/dist/ backend/public/frontend/
+    - rsync -a admin/dist/ backend/public/admin/
+    - echo "== Reiniciando Passenger =="
+    - mkdir -p backend/tmp && touch backend/tmp/restart.txt
