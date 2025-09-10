@@ -17,6 +17,9 @@ api.interceptors.request.use((config) => {
  export const adminService = {
    login: (data) => api.post('/auth/login', data),
    register: (data) => api.post('/auth/register', data),
+  // fluxo de convite de admin
+  createAdminInvite: (email) => api.post('/auth/admin-invite', { email }),
+  registerAdminWithInvite: ({ inviteToken, name, password }) => api.post('/auth/register-admin', { inviteToken, name, password }),
    forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
    resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
    me: () => api.get('/auth/me'),

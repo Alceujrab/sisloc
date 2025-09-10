@@ -36,6 +36,7 @@ function LoginPage() {
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
+  const [inviteToken, setInviteToken] = useState('');
   const [regLoading, setRegLoading] = useState(false);
 
   const onSubmit = async (e) => {
@@ -90,9 +91,14 @@ function LoginPage() {
     try {
       setError('');
       setInfo('');
-      const r = await adminService.register({ name: regName, email: regEmail, password: regPassword });
+      if (!inviteToken) {
+        setError('Informe o código de convite para criar um administrador. Solicite ao admin atual.');
+        return;
+      }
+      // o backend usa o email contido no token; campo de email fica apenas informativo
+      const r = await adminService.registerAdminWithInvite({ inviteToken, name: regName, password: regPassword });
       if (r.data?.success) {
-        setInfo('Conta criada. Faça login com seu email e senha.');
+        setInfo('Administrador criado. Faça login com seu email e senha.');
         setShowRegister(false);
       } else {
         setError(r.data?.message || 'Não foi possível criar a conta.');
@@ -147,15 +153,16 @@ function LoginPage() {
               </div>
               <form onSubmit={onRegister} className="space-y-3">
                 <TextInput label="Nome" value={regName} onChange={(e) => setRegName(e.target.value)} required />
-                <TextInput label="Email" type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} required />
+                <TextInput label="Email (informativo do convite)" type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} placeholder="email do convite" />
                 <TextInput label="Senha" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} required />
+                <TextInput label="Código de Convite" value={inviteToken} onChange={(e) => setInviteToken(e.target.value)} required placeholder="cole aqui o token recebido" />
                 <div className="flex items-center gap-3">
                   <button type="button" onClick={() => setShowRegister(false)} className="px-4 py-2 border rounded">Cancelar</button>
                   <button type="submit" disabled={regLoading} className="px-4 py-2 bg-blue-600 text-white rounded">
                     {regLoading ? 'Criando...' : 'Criar conta'}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500">A conta criada terá acesso ao painel. Garanta que seu backend aprove usuários adequadamente.</p>
+                <p className="text-xs text-gray-500">Para segurança, somente quem receber um convite de um administrador atual consegue criar uma nova conta admin.</p>
               </form>
             </div>
           </div>

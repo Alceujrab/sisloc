@@ -1,4 +1,78 @@
-# 🌐 Guia de Deploy - Sistema Locadora
+# 🌐 Guia de Deploy - Sistema Locadora (cPanel)
+
+> Este documento foi atualizado para refletir o deploy atual em **cPanel** com uma única aplicação Node servindo API + SPAs. As seções originais (PM2, VPS, Docker, Render, PlanetScale) foram movidas para o final e marcadas como **LEGADO** para referência.
+
+## Deploy Atual (Produção cPanel)
+
+### Visão Geral
+O backend (Express) serve também os arquivos estáticos das SPAs (frontend e admin) a partir de `backend/public/frontend` e `backend/public/admin`. O build e a cópia ocorrem automaticamente via `.cpanel.yml`.
+
+### URLs de Produção
+- Health: `https://rent.cfauto.com.br/api/health`
+- Frontend: `https://rent.cfauto.com.br/`
+- Admin: `https://rent.cfauto.com.br/admin`
+
+### Fluxo de Deploy
+1. Commit & push no branch `main`
+2. No painel Git do cPanel: “Update from Remote”
+3. Em seguida: “Deploy HEAD Commit”
+4. Acompanhar o log: verificar builds e linha de reinício Passenger
+5. Testar `/api/health`
+
+### Arquivo `.cpanel.yml` (Resumo das Tarefas)
+1. Ativa ambiente Node (`activate`)
+2. Instala dependências backend (produção)
+3. Builda `frontend` e `admin`
+4. Limpa e copia bundles para `backend/public/...`
+5. Reinicia Passenger (touch restart.txt)
+
+### Variáveis de Ambiente Necessárias
+| Variável | Descrição |
+|----------|-----------|
+| DATABASE_URL | URL completa Postgres/MySQL (produção usa Postgres) |
+| DB_USE_URL | `true` para usar DATABASE_URL |
+| DB_SSL | `true` (para provedores gerenciados) |
+| DB_SSL_REJECT_UNAUTHORIZED | `false` (evitar falha de cert self-signed) |
+| JWT_SECRET | Segredo JWT forte |
+| FRONTEND_URL | `https://rent.cfauto.com.br` |
+| ADMIN_URL | `https://rent.cfauto.com.br/admin` |
+| CORS_ORIGINS | Lista de origens permitidas (as duas acima) |
+| ADMIN_INVITE_TTL | Duração do token de convite (ex: `2d`) |
+| EXPOSE_ERRORS | `false` em produção (usar `true` apenas para debug temporário) |
+| SMTP_* | (Opcional) Config de email |
+| META_WABA_* | (Opcional) WhatsApp Cloud |
+| STRIPE_* | (Opcional) Pagamentos |
+
+### Estrutura de Build
+- `frontend/dist` -> copiado para `backend/public/frontend`
+- `admin/dist` -> copiado para `backend/public/admin`
+- Fallback SPA: configurado em `backend/src/app.js` (rotas `/admin/*` e demais `/*` não-API)
+
+### Logs e Debug
+- Passenger cria `passenger.log` no diretório da app (ou raiz backend)
+- Para crash oculto: adicionar temporariamente `EXPOSE_ERRORS=true` e redeploy
+- Health endpoint: valida DB + status básico
+
+### Passos de Verificação Pós-Deploy
+1. Status 200 em `/api/health`
+2. Carregamento completo do HTML do frontend e admin (ver network no navegador)
+3. Login admin funcional
+4. Invite flow `/api/auth/admin-invite` (com admin logado) retornando token
+
+### Problemas Comuns
+| Sintoma | Causa Provável | Ação |
+|--------|----------------|------|
+| Página "It works!" | Passenger não reiniciou ou root incorreto | Verificar app root e tocar `backend/tmp/restart.txt` |
+| 500 em /api/health | Variável de DB ausente ou URL inválida | Revisar `DATABASE_URL` e flags SSL |
+| Frontend carrega sem CSS/JS | Falha no build ou cópia | Checar log `.cpanel.yml` (rsync) |
+| 401 em rotas admin | Token ausente / login inválido | Refazer login; verificar JWT_SECRET consistente |
+
+---
+
+## LEGADO (Outros Métodos de Deploy)
+
+As seções abaixo permanecem para referência, mas **não** refletem o ambiente atual (cPanel unificado).
+
 
 ## Sumário
 
@@ -546,7 +620,7 @@ tar -xzf uploads_backup.tar.gz -C /
 
 ## Troubleshooting
 
-### Problemas Comuns
+### Problemas Comuns (VPS / Docker)
 
 1. **Erro 502 Bad Gateway**
    - Verificar se backend está rodando: `pm2 status`

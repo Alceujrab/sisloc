@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { User } = require('../models');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -272,6 +272,76 @@ router.post('/resend-verification', [ body('email').isEmail() ], async (req, res
   } catch (err) {
     console.error('Erro resend-verification:', err);
     res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/auth/admin-invite - Gera um token de convite para criar admin (somente admins)
+router.post('/admin-invite', 
+  authenticateToken, 
+  authorizeRoles('admin'), 
+  [ body('email').isEmail().withMessage('Email inválido') ], 
+  async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: 'Dados inválidos', errors: errors.array() });
+    }
+    const { email } = req.body;
+    const secret = process.env.JWT_SECRET || 'devsecret';
+    const ttl = process.env.ADMIN_INVITE_TTL || '2d';
+    const inviteToken = jwt.sign({ purpose: 'admin_invite', email }, secret, { expiresIn: ttl });
+    return res.json({ success: true, message: 'Convite gerado', data: { inviteToken } });
+  } catch (err) {
+    const expose = process.env.EXPOSE_ERRORS === 'true' || process.env.NODE_ENV === 'development';
+    return res.status(500).json({ success: false, message: 'Erro interno do servidor', ...(expose && { error: String(err?.message || err) }) });
+  }
+});
+
+// POST /api/auth/register-admin - Cria/atualiza usuário admin a partir de um token de convite
+router.post('/register-admin', [
+  body('inviteToken').notEmpty().withMessage('Convite é obrigatório'),
+  body('name').isLength({ min: 2, max: 100 }).withMessage('Nome deve ter entre 2 e 100 caracteres'),
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('Senha deve ter pelo menos 6 caracteres')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Senha deve conter pelo menos uma letra maiúscula, uma minúscula e um número')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: 'Dados inválidos', errors: errors.array() });
+    }
+    const { inviteToken, name, password } = req.body;
+    const secret = process.env.JWT_SECRET || 'devsecret';
+    let payload;
+    try {
+      payload = jwt.verify(inviteToken, secret);
+    } catch (e) {
+      return res.status(400).json({ success: false, message: 'Convite inválido ou expirado' });
+    }
+    if (payload?.purpose !== 'admin_invite' || !payload?.email) {
+      return res.status(400).json({ success: false, message: 'Convite inválido' });
+    }
+
+    const email = payload.email;
+    let user = await User.findOne({ where: { email } });
+    if (!user) {
+      user = await User.create({ name, email, password, role: 'admin', is_verified: true, status: 'active' });
+    } else {
+      await user.update({ name, password, role: 'admin', is_verified: true, status: 'active' });
+    }
+
+    const token = (function generateToken(userId) {
+      const secret = process.env.JWT_SECRET || 'devsecret';
+      const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
+      return jwt.sign({ userId }, secret, { expiresIn });
+    })(user.id);
+
+    return res.json({ success: true, message: 'Administrador registrado com sucesso', data: { user, token } });
+  } catch (err) {
+    const expose = process.env.EXPOSE_ERRORS === 'true' || process.env.NODE_ENV === 'development';
+    return res.status(500).json({ success: false, message: 'Erro interno do servidor', ...(expose && { error: String(err?.message || err) }) });
   }
 });
 
