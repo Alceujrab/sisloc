@@ -5,16 +5,17 @@ deployment:
     - echo "==== DEPLOY START $(date -u +%Y-%m-%dT%H:%M:%SZ) ===="
 
     # Ativa ambiente Node da aplicação (garante versão correta) e define produção
-    - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && export NODE_ENV=production && set -e && echo "== Ambiente ==" && pwd && echo "NODE $(node -v)" && which node
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && set -e && echo "== Ambiente (build) ==" && pwd && echo "NODE $(node -v)" && which node && echo "NODE_ENV atual: ${NODE_ENV:-<vazio>}"
 
     # Backend deps (usa ci para instalação limpa). Flags: --omit=dev sem audit/fund para acelerar
     - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (Backend) npm ci start $(date +%H:%M:%S) ==" && npm --prefix backend ci --omit=dev --no-audit --no-fund && echo "== (Backend) npm ci done $(date +%H:%M:%S) =="
 
     # Frontend build
-    - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (Frontend) deps+build start $(date +%H:%M:%S) ==" && npm --prefix frontend ci --no-audit --no-fund && npm --prefix frontend run build && echo "== (Frontend) build done $(date +%H:%M:%S) =="
+  # IMPORTANTE: não setar NODE_ENV=production antes aqui para instalar devDependencies (vite etc)
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (Frontend) deps+build start $(date +%H:%M:%S) ==" && NODE_ENV=development npm --prefix frontend ci --no-audit --no-fund --include=dev && npm --prefix frontend run build && echo "== (Frontend) build done $(date +%H:%M:%S) =="
 
     # Admin build
-    - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (Admin) deps+build start $(date +%H:%M:%S) ==" && npm --prefix admin ci --no-audit --no-fund && npm --prefix admin run build && echo "== (Admin) build done $(date +%H:%M:%S) =="
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (Admin) deps+build start $(date +%H:%M:%S) ==" && NODE_ENV=development npm --prefix admin ci --no-audit --no-fund --include=dev || (echo "Admin npm ci falhou; tentando npm install" && NODE_ENV=development npm --prefix admin install --no-audit --no-fund) && npm --prefix admin run build && echo "== (Admin) build done $(date +%H:%M:%S) =="
 
     # Limpa bundles antigos para evitar lixo
     - echo "== Limpeza bundles antigos $(date +%H:%M:%S) ==" && rm -rf backend/public/frontend/* backend/public/admin/* || true
@@ -27,7 +28,7 @@ deployment:
     - echo "== Conteúdo copiado (index.html encontrados) ==" && find backend/public -maxdepth 2 -type f -name 'index.html'
 
     # Reinicia Passenger para carregar novo código
-    - echo "== Reiniciando Passenger $(date +%H:%M:%S) ==" && mkdir -p backend/tmp && touch backend/tmp/restart.txt
+  - echo "== Reiniciando Passenger $(date +%H:%M:%S) ==" && mkdir -p backend/tmp && touch backend/tmp/restart.txt && echo "(Runtime NODE_ENV=production assumido pelo painel)"
 
     # Final
     - echo "==== DEPLOY END $(date -u +%Y-%m-%dT%H:%M:%SZ) ===="
