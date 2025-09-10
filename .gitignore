@@ -8,6 +8,7 @@ Thumbs.db
 *.swp
 *.zip
 Locadora.z0*
+.htaccess
 
 # Node & build outputs
 **/node_modules/
