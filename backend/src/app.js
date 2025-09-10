@@ -25,6 +25,10 @@ const defaultOrigins = [
   'http://localhost:5173','http://localhost:5174','http://localhost:5175',
   'http://127.0.0.1:5173','http://127.0.0.1:5174','http://127.0.0.1:5175'
 ];
+// Fallback para erro de digitação (caso tenha sido configurado AADMIN_URL no painel)
+if (!process.env.ADMIN_URL && process.env.AADMIN_URL) {
+  process.env.ADMIN_URL = process.env.AADMIN_URL; // ajusta em runtime
+}
 const envOrigins = (process.env.CORS_ORIGINS || '').split(',').map(s=>s.trim()).filter(Boolean);
 const configuredOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL, ...envOrigins].filter(Boolean);
 const allowedOrigins = Array.from(new Set([...defaultOrigins, ...configuredOrigins]));
