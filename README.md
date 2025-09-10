@@ -62,13 +62,16 @@ Locadora/
 
 ### Admin (Painel Administrativo)
 
-
 1. `cd admin`
 2. `npm install`
 3. Configure as variáveis de ambiente (`.env` com VITE_API_URL)
 4. `npm run dev` (porta 3001)
 
 Mais detalhes em `docs/INSTALLATION.md`. O guia de deploy agora foca em cPanel/aplicação unificada (ver seção abaixo).
+
+## Nota sobre o prefixo /api
+
+Não existe uma pasta física chamada `api`. O prefixo `/api` é definido no código Express (`app.use('/api/...')`) para agrupar endpoints. Ex.: `/api/health`, `/api/auth/login` etc. Isso é normal e não aparecerá no gerenciador de arquivos do cPanel.
 
 ## Deploy em Produção (cPanel)
 
@@ -88,7 +91,17 @@ Pipeline automatizado: arquivo `.cpanel.yml` na raiz executa:
 4. Copia bundles para `backend/public/frontend` e `backend/public/admin`
 5. Reinicia Passenger (touch em `backend/tmp/restart.txt`)
 
-Variáveis de ambiente mínimas no cPanel (Node App):
+### Checklist rápido de deploy
+
+1. `git push main`
+2. cPanel > Node.js App: confirmar Raiz do aplicativo = `rent.cfauto.com.br/backend` e Node 20.x
+3. cPanel > Deploy HEAD Commit (após Update from Remote)
+4. Ver no log: linhas "== Build frontend ==", "== Build admin ==", "== Copiando bundles" e "== Reiniciando Passenger =="
+5. Testar `https://rent.cfauto.com.br/api/health`
+6. Abrir `frontend` e `admin` no navegador
+7. (Se erro) Ver passenger/error log e rodar script `check_deploy.sh` (se presente)
+
+### Variáveis de ambiente mínimas (Node App)
 
 - `DATABASE_URL` (Postgres/MySQL - usamos Postgres em produção)
 - `DB_USE_URL=true`
@@ -96,7 +109,7 @@ Variáveis de ambiente mínimas no cPanel (Node App):
 - `JWT_SECRET` (segredo forte)
 - `FRONTEND_URL` (ex: <https://rent.cfauto.com.br>)
 - `ADMIN_URL` (ex: <https://rent.cfauto.com.br/admin>)
-- `CORS_ORIGINS` (lista separada por vírgula, incluir os dois acima)
+- `CORS_ORIGINS` (lista separada por vírgula, incluir os dois acima — sem a parte `/admin` em cada URL adicional)
 - `ADMIN_INVITE_TTL=2d`
 - (opcionais) SMTP_*, META_WABA_*, STRIPE_* etc.
 

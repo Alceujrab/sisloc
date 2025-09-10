@@ -2,7 +2,7 @@
 deployment:
   tasks:
     # Ativa ambiente Node da aplicação (garante versão correta) e define produção
-    - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && export NODE_ENV=production && echo "NODE $(node -v)" && which node
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && export NODE_ENV=production && echo "== Ambiente ==" && pwd && echo "NODE $(node -v)" && which node
 
     # Backend deps (usa ci para instalação limpa). O prefix evita precisar de cd
     - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== Instala dependencias backend ==" && npm --prefix backend ci --omit=dev
@@ -17,7 +17,8 @@ deployment:
     - rm -rf backend/public/frontend/* backend/public/admin/* || true
 
     # Copia novos bundles
-    - echo "== Copiando bundles para backend/public ==" && rsync -a frontend/dist/ backend/public/frontend/ && rsync -a admin/dist/ backend/public/admin/
+  - echo "== Preparando diretórios de destino ==" && mkdir -p backend/public/frontend backend/public/admin
+  - echo "== Copiando bundles para backend/public ==" && rsync -a frontend/dist/ backend/public/frontend/ && rsync -a admin/dist/ backend/public/admin/
 
     # Lista conteúdo para debug rápido
     - echo "== Conteúdo copiado (tree nivel 2) ==" && find backend/public -maxdepth 2 -type f -name 'index.html'
