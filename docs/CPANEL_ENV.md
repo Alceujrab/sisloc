@@ -2,6 +2,12 @@
 
 Este projeto agora está hospedado **exclusivamente no cPanel**. O arquivo `render.yaml` foi marcado como legado e não é usado.
 
+Diretório raiz do repositório no servidor (clone): `/home/cfauto/rent.cfauto.com.br`
+
+Application Root configurado no painel Node.js: `rent.cfauto.com.br/backend`
+
+Se alterar o nome do domínio/pasta, lembre de ajustar o caminho no `.cpanel.yml` (linhas que ativam o nodevenv) e a opção *Application Root*.
+
 ## Principais Variáveis
 
 | Variável | Obrigatória | Exemplo / Valor | Observação |

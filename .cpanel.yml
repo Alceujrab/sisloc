@@ -2,16 +2,16 @@
 deployment:
   tasks:
     # Ativa ambiente Node da aplicação (garante versão correta) e define produção
-    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && export NODE_ENV=production && echo "NODE $(node -v)" && which node
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && export NODE_ENV=production && echo "NODE $(node -v)" && which node
 
     # Backend deps (usa ci para instalação limpa). O prefix evita precisar de cd
-    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && echo "== Instala dependencias backend ==" && npm --prefix backend ci --omit=dev
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== Instala dependencias backend ==" && npm --prefix backend ci --omit=dev
 
     # Frontend build
-    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && echo "== Build frontend ==" && npm --prefix frontend ci && npm --prefix frontend run build
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== Build frontend ==" && npm --prefix frontend ci && npm --prefix frontend run build
 
     # Admin build
-    - . /home/cfauto/nodevenv/rent/backend/20/bin/activate && echo "== Build admin ==" && npm --prefix admin ci && npm --prefix admin run build
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== Build admin ==" && npm --prefix admin ci && npm --prefix admin run build
 
     # Limpa bundles antigos para evitar lixo
     - rm -rf backend/public/frontend/* backend/public/admin/* || true
