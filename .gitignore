@@ -10,6 +10,7 @@ Thumbs.db
 Locadora.z0*
 .htaccess
 !admin/.htaccess
+!backend/public/.htaccess
 
 # Node & build outputs
 **/node_modules/

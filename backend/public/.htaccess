@@ -1,0 +1,17 @@
+RewriteEngine On
+
+# Serve Admin SPA from built bundle
+RewriteCond %{REQUEST_URI} ^/admin [NC]
+# Allow direct access to files/dirs (assets)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Fallback any /admin/* route to built index
+RewriteRule ^admin/?.*$ admin/index.html [L]
+
+# Serve Frontend SPA for non-API routes (not /admin)
+RewriteCond %{REQUEST_URI} !^/api [NC]
+RewriteCond %{REQUEST_URI} !^/admin [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ frontend/index.html [L]
+
