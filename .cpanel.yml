@@ -7,6 +7,9 @@ deployment:
     # Ativa ambiente Node da aplicação (garante versão correta) e define produção
   - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && set -e && echo "== Ambiente (build) ==" && pwd && echo "NODE $(node -v)" && which node && echo "NODE_ENV atual: ${NODE_ENV:-<vazio>}"
 
+  # Garante que devDependencies não serão omitidas (remove omit global se existir)
+  - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (npm) verificando config omit ==" && npm config get omit && npm config delete omit || true && echo "== (npm) omit removido (se existia) ==" && npm config get omit
+
     # Backend deps (usa ci para instalação limpa). Flags: --omit=dev sem audit/fund para acelerar
     - . /home/cfauto/nodevenv/rent.cfauto.com.br/backend/20/bin/activate && echo "== (Backend) npm ci start $(date +%H:%M:%S) ==" && npm --prefix backend ci --omit=dev --no-audit --no-fund && echo "== (Backend) npm ci done $(date +%H:%M:%S) =="
 

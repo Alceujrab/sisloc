@@ -104,9 +104,12 @@ if (process.env.SERVE_SPA !== 'false') { // flag opcional para desativar
   app.use(express.static(frontendDir));
   app.use('/admin', express.static(adminDir));
 
-  // Fallback admin SPA
+
+  // Fallback admin SPA: só para rotas que não são assets
   app.get('/admin/*', (req, res, next) => {
     if (req.path.startsWith('/admin/api')) return next();
+    // Se for asset (tem extensão), não faz fallback
+    if (req.path.match(/\.[a-zA-Z0-9]+$/)) return next();
     return res.sendFile(path.join(adminDir, 'index.html'), (err) => { if (err) next(); });
   });
 
