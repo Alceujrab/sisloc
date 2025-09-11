@@ -48,3 +48,7 @@ pnpm-debug.log*
 # Ignora bundles gerados dos SPAs
 backend/public/admin/
 backend/public/frontend/
+
+# Secrets accidentally present locally (never commit)
+token do git para sisloc.txt
+twilio_2FA_recovery_code.txt
