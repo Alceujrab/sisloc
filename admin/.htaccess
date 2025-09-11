@@ -1,0 +1,16 @@
+# Ensure Apache rewrites are enabled
+RewriteEngine On
+RewriteBase /admin/
+
+# 1) If the request is for the admin root or admin/index.html, serve the built app
+RewriteRule ^$ dist/index.html [L]
+RewriteRule ^index\.html$ dist/index.html [L]
+
+# 2) Allow built assets to be served directly
+RewriteRule ^assets/ - [L]
+
+# 3) SPA fallback: for any path that is not a real file/dir, serve the built index
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . dist/index.html [L]
+
