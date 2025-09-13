@@ -40,8 +40,14 @@ Sistema completo para locação de veículos com website frontend para clientes 
 Locadora/
 ├── backend/          # API Node.js + Express
 ├── frontend/         # React App
-├── database/         # Scripts SQL
-└── docs/            # Documentação
+├── admin/           # Painel Administrativo
+├── database/        # Scripts SQL
+└── docs/           # Documentação
+    ├── MARKETING_PROMPT.md         # Prompt de marketing completo
+    ├── TECHNICAL_PROMPT.md         # Prompt técnico para desenvolvimento
+    ├── CUSTOMER_EXPERIENCE_PROMPT.md # Prompt de experiência do cliente
+    ├── INSTALLATION.md             # Guia de instalação
+    └── DEPLOY.md                   # Guia de deploy
 ```
 
 ## Como Executar (Desenvolvimento)
@@ -132,6 +138,8 @@ O arquivo `render.yaml` permanece apenas como legado (não usado).
 - ✅ Área do cliente
 - ✅ Sistema de pagamento
 - ✅ Blog/conteúdo
+- ✅ Programa de fidelidade
+- ✅ Planos de assinatura
 
 ### Painel Administrativo
 
@@ -141,6 +149,35 @@ O arquivo `render.yaml` permanece apenas como legado (não usado).
 - ✅ Gestão de clientes
 - ✅ Relatórios financeiros
 - ✅ Configurações do sistema
+
+## Prompts de Marketing e Desenvolvimento
+
+O sistema inclui prompts abrangentes para diferentes aspectos:
+
+### 📝 [Marketing Prompt](docs/MARKETING_PROMPT.md)
+Prompt completo de marketing com:
+- Proposta de valor principal
+- Características e benefícios
+- Categorias de veículos
+- Planos de assinatura
+- Testemunhos e social proof
+- FAQs e conteúdo promocional
+
+### 🔧 [Technical Prompt](docs/TECHNICAL_PROMPT.md)
+Prompt técnico para desenvolvimento:
+- Componentes React reutilizáveis
+- Integração com APIs
+- Sistema de pagamentos
+- Configurações de deploy
+- Campanhas de email marketing
+
+### 👤 [Customer Experience Prompt](docs/CUSTOMER_EXPERIENCE_PROMPT.md)
+Prompt focado na experiência do cliente:
+- Jornada completa do usuário
+- Portal do cliente
+- Programa de fidelidade
+- Suporte e atendimento
+- App mobile features
 
 ## Licença
 
